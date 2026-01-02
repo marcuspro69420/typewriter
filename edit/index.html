@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Typewriter Editor</title>
+    <style>
+        body { font-family: monospace; background: #0a0a0a; color: #00ff41; padding: 40px; text-align: center; }
+        textarea { width: 80%; height: 60px; background: #111; color: #fff; border: 1px solid #00ff41; padding: 10px; margin-bottom: 20px; }
+        button { width: 80%; padding: 15px; background: #00ff41; font-weight: bold; cursor: pointer; border: none; }
+    </style>
+</head>
+<body>
+    <h2>MARC'S EDITOR</h2>
+    <textarea id="textInput" placeholder="Type a word..."></textarea><br>
+    <button onclick="updateApi()">UPDATE API JSON</button>
+    <script>
+        const charMap = {'a':'000001','b':'000010','c':'000011','d':'000100','e':'000101','f':'000110','g':'000111','h':'001000','i':'001001','j':'001010','k':'001011','l':'001100','m':'001101','n':'001110','o':'001111','p':'010000','q':'010001','r':'010010','s':'010011','t':'010100','u':'010101','v':'010110','w':'010111','x':'011000','y':'011001','z':'011010',' ':'000000'};
+        function updateApi() {
+            const val = document.getElementById('textInput').value;
+            if(!val) return;
+            const firstChar = val[0].toLowerCase();
+            const bits = charMap[firstChar] || "000000";
+            const shift = (val[0] !== firstChar) ? "1" : "0";
+            const finalBin = bits + shift + "1"; 
+            window.location.href = `../api/index.html?value=${finalBin}`;
+        }
+    </script>
+</body>
+</html>
