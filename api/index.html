@@ -1,11 +1,52 @@
 <!DOCTYPE html>
 <html>
-<head><title>JSON API</title></head>
-<body style="background: white; color: black; font-family: monospace; margin: 0; padding: 10px;">
-<script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const val = urlParams.get('value') || "00000000";
-    document.body.innerText = JSON.stringify({ "value": val });
-</script>
+<head>
+    <title>Typewriter API</title>
+    <style>
+        body { background: #000; color: #00ff41; font-family: monospace; padding: 20px; text-align: center; }
+        #log { border: 1px solid #333; padding: 25px; margin-top: 20px; background: #111; color: #fff; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <h2>TRANSMITTING TO 10.56.121.83</h2>
+    <div id="log">Awaiting command from editor...</div>
+
+    <script>
+        const charMap = {'a':'000001','b':'000010','c':'000011','d':'000100','e':'000101','f':'000110','g':'000111','h':'001000','i':'001001','j':'001010','k':'001011','l':'001100','m':'001101','n':'001110','o':'001111','p':'010000','q':'010001','r':'010010','s':'010011','t':'010100','u':'010101','v':'010110','w':'010111','x':'011000','y':'011001','z':'011010',' ':'000000','0':'100100','1':'011011','2':'011100','3':'011101','4':'011110','5':'011111','6':'100000','7':'100001','8':'100010','9':'100011'};
+
+        async function transmit() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const text = urlParams.get('text');
+            const targetIp = "10.56.121.83"; 
+            const targetUrl = `http://${targetIp}:8080/?sid=marc`;
+
+            if (text) {
+                const log = document.getElementById('log');
+                for (let char of text) {
+                    const lower = char.toLowerCase();
+                    const bits = charMap[lower] || "000000";
+                    const shift = (char !== lower) ? "1" : "0";
+
+                    log.innerText = `SENDING: ${char}`;
+
+                    try {
+                        // Pulse HIGH
+                        await fetch(targetUrl, { method: 'POST', mode: 'no-cors', body: "value=" + bits + shift + "1" });
+                        await new Promise(r => setTimeout(r, 120));
+
+                        // Pulse LOW
+                        await fetch(targetUrl, { method: 'POST', mode: 'no-cors', body: "value=" + bits + shift + "0" });
+                        await new Promise(r => setTimeout(r, 60));
+                    } catch (err) {
+                        log.innerText = "FAILED: Connection timed out.";
+                        return;
+                    }
+                }
+                log.innerText = "SENTENCE COMPLETE.";
+                setTimeout(() => window.location.href = "../edit/", 1000);
+            }
+        }
+        transmit();
+    </script>
 </body>
 </html>
