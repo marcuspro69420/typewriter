@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head><title>JSON API</title></head>
+<body style="background: white; color: black; font-family: monospace; margin: 0; padding: 10px;">
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const val = urlParams.get('value') || "00000000";
+    document.body.innerText = JSON.stringify({ "value": val });
+</script>
+</body>
+</html>
